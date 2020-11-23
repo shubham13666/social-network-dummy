@@ -25,5 +25,5 @@ mongoose.connect(mongodbUrl, { useNewUrlParser: true }).then(res => {
     console.log("Connected to MongoDB...")
     return server.listen({ port: 5000 });
 }).then(res => {
-    console.log("Server is running on ", res.url);
+    console.log("Server is running at ", res.url);
 })
