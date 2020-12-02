@@ -7,7 +7,25 @@ type Post{
     createdAt:String!
     username:String!
     user:ID!
+    comments:[Comment]!
+    likes:[Like]!
 }
+
+type Comment{
+    id:ID!
+    body:String!
+    username:String!
+    user:ID!
+    createdAt:String!
+}
+
+type Like{
+    id:ID!
+    username:String!
+    userId:ID!
+    createdAt:String!
+}
+
 type User{
     id:ID!
     username:String!
@@ -16,17 +34,20 @@ type User{
     createdAt:String!
     token:String!
 }
+
 input RegisterUserInput{
     username:String!
     email:String!
     password:String!
     confirmPassword:String!
 }
+
 type Query{
     # posts
     getPosts: [Post]!
     getPost(postId:ID!):Post!
 }
+
 type Mutation{
     # users
     registerUser(registerUserInput:RegisterUserInput!):User!
@@ -34,7 +55,11 @@ type Mutation{
 
     # posts
     createPost(body:String!):Post!
-    deletePost(postId:ID!):Boolean!
+    deletePost(postId:ID!):String!
+    addComment(postId:ID!,body:String!):Post!
+    deleteComment(postId:ID! commentId:ID!):Post!
+    deleteAllPosts:String!
+    likePost(postId:ID!):Post!
 }
 `
 module.exports = typeDef;

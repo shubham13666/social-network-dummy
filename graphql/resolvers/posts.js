@@ -1,4 +1,4 @@
-const { AuthenticationError } = require("apollo-server")
+const { AuthenticationError, forEachField } = require("apollo-server")
 
 
 const Post = require("../../models/post")
@@ -46,7 +46,7 @@ module.exports = {
         async deletePost(_, { postId }, context) {
             const token = Helpers.getTokenFromContext(context);
             const currentUser = Authentication.checkAuthorization(token);
-            
+
             try {
                 // Check if the user trying to delete the post is the creator of the post.
                 const postToBeDeleted = await Post.findById(postId);
@@ -64,7 +64,7 @@ module.exports = {
                 }
                 else if (deletedPostStatus.ok === 1) {
                     if (deletedPostStatus.deletedCount === 1) {
-                        return true;
+                        return "Post deleted successfully.";
                     }
                     else {
                         throw new Error("Post with given id doesn't exist.")
@@ -73,8 +73,18 @@ module.exports = {
             } catch (error) {
                 throw new Error(error);
             }
-        }
+        },
+        async deleteAllPosts(_, args, context) {
+            const token = Helpers.getTokenFromContext(context);
+            const currentUser = Authentication.checkAuthorization(token);
 
+            try {
+                const deleteAllResponse = await Post.deleteMany({ username: currentUser.username })
+                return `Deleted ${deleteAllResponse.deletedCount} ${deleteAllResponse.deletedCount == 1 ? "post" : "posts"}.`;
+            } catch (error) {
+                throw new Error(error);
+            }
+        }
     }
 
 }
