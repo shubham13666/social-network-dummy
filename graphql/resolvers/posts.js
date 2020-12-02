@@ -1,14 +1,80 @@
+const { AuthenticationError } = require("apollo-server")
+
+
 const Post = require("../../models/post")
+const Authentication = require("../../utils/authentication");
+const Helpers = require("../../utils/helpers");
 
 module.exports = {
-    getPosts: {
+    query: {
         async getPosts() {
             try {
-                return Post.find()
+                return Post.find().sort({ createdAt: -1 });
             }
             catch (err) {
                 console.log(err)
             }
+        },
+        async getPost(_, { postId }) {
+            try {
+                // TODO: Check if postId is valid and of correct ID type.
+                let post = await Post.findById(postId);
+                if (!post) {
+                    throw new Error("Post with given id doesn't exist.");
+                }
+                return post;
+            } catch (error) {
+                throw new Error("Server error", error);
+            }
         }
+    },
+    mutation: {
+        async createPost(_, { body }, context) {
+            const token = Helpers.getTokenFromContext(context);
+            const user = Authentication.checkAuthorization(token);
+
+            const newPost = new Post({
+                body,
+                user: user.id,
+                username: user.username,
+                createdAt: new Date().toISOString()
+            })
+            const addedNewPost = await newPost.save();
+
+            return addedNewPost;
+        },
+        async deletePost(_, { postId }, context) {
+            const token = Helpers.getTokenFromContext(context);
+            const currentUser = Authentication.checkAuthorization(token);
+            
+            try {
+                // Check if the user trying to delete the post is the creator of the post.
+                const postToBeDeleted = await Post.findById(postId);
+                if (!postToBeDeleted) {
+                    throw new Error("Post with given id doesn't exist.")
+                }
+                if (currentUser.username !== postToBeDeleted.username) {
+                    throw new AuthenticationError("Action not allowed.")
+                }
+
+                // Delete the post
+                const deletedPostStatus = await Post.deleteOne({ _id: postId });
+                if (deletedPostStatus.ok != 1) {
+                    throw new Error("Unable to delete.")
+                }
+                else if (deletedPostStatus.ok === 1) {
+                    if (deletedPostStatus.deletedCount === 1) {
+                        return true;
+                    }
+                    else {
+                        throw new Error("Post with given id doesn't exist.")
+                    }
+                }
+            } catch (error) {
+                throw new Error(error);
+            }
+        }
+
     }
+
 }

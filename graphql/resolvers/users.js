@@ -6,7 +6,7 @@ const UserInputValidation = require("../../utils/validators");
 const Authentication = require("../../utils/authentication");
 
 module.exports = {
-    registerUser: {
+    mutation: {
         async registerUser(parent, { registerUserInput: { username, email, password, confirmPassword } }, context, info) {
             // Validate user data
             let { errors, valid } = UserInputValidation.validateUserInput(username, email, password, confirmPassword);
@@ -51,9 +51,8 @@ module.exports = {
                 id: addedNewUser._id,
                 token
             }
-        }
-    },
-    loginUser: {
+        },
+
         async loginUser(parent, { username, password }, context, info) {
             // Validate the input details
             let { errors, valid } = UserInputValidation.validateLoginInpput(username, password);

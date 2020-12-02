@@ -5,6 +5,8 @@ type Post{
     id:ID!
     body:String!
     createdAt:String!
+    username:String!
+    user:ID!
 }
 type User{
     id:ID!
@@ -21,11 +23,18 @@ input RegisterUserInput{
     confirmPassword:String!
 }
 type Query{
+    # posts
     getPosts: [Post]!
+    getPost(postId:ID!):Post!
 }
 type Mutation{
+    # users
     registerUser(registerUserInput:RegisterUserInput!):User!
     loginUser(username: String!,password: String!):User!
+
+    # posts
+    createPost(body:String!):Post!
+    deletePost(postId:ID!):Boolean!
 }
 `
 module.exports = typeDef;

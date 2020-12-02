@@ -3,13 +3,13 @@ const mongoose = require('mongoose')
 const mongodbUrl = require('./config').MONGODB
 
 const typeDefs = require('./graphql/typeDefs');
-const Post = require('./models/post');
 const resolvers = require("./graphql/resolvers");
 
 
 const server = new ApolloServer({
     typeDefs,
-    resolvers
+    resolvers,
+    context: ({ req }) => ({ req })
 });
 
 mongoose.connect(mongodbUrl, { useNewUrlParser: true }).then(res => {
