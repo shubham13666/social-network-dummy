@@ -1,4 +1,4 @@
-const { AuthenticationError, forEachField } = require("apollo-server")
+const { AuthenticationError, forEachField, UserInputError } = require("apollo-server")
 
 
 const Post = require("../../models/post")
@@ -84,6 +84,28 @@ module.exports = {
             } catch (error) {
                 throw new Error(error);
             }
+        },
+        async likePost(_, { postId }, context) {
+            const token = Helpers.getTokenFromContext(context);
+            const currentUser = Authentication.checkAuthorization(token);
+
+            const post = await Post.findById(postId);
+            if (!post) {
+                throw new UserInputError("Post doesn't exist for given post id.");
+            }
+            if (post.likes.find(like => like.username === currentUser.username)) {
+                // Post already liked. So remove it.
+                post.likes = post.likes.filter(like => like.username !== currentUser.username);
+            } else {
+                // Like the post.
+                post.likes.push({
+                    user: currentUser.id,
+                    username: currentUser.username,
+                    createdAt: new Date().toISOString()
+                })
+            }
+            await post.save();
+            return post;
         }
     }
 
