@@ -12,13 +12,15 @@ const postSchema = new Schema({
     comments: [
         {
             body: String,
+            username:String,
             likes: [
                 {
                     user: {
                         type: Schema.Types.ObjectId,
                         ref: 'User'
                     },
-                    createdAt: String
+                    createdAt: String,
+                    username:String
                 }
             ],
             createdAt: String,
@@ -34,7 +36,8 @@ const postSchema = new Schema({
                 type: Schema.Types.ObjectId,
                 ref: 'User'
             },
-            createdAt: String
+            createdAt: String,
+            username:String
         }
     ]
 })

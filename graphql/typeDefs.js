@@ -56,9 +56,9 @@ type Mutation{
     # posts
     createPost(body:String!):Post!
     deletePost(postId:ID!):String!
+    deleteAllPosts:String!
     addComment(postId:ID!,body:String!):Post!
     deleteComment(postId:ID! commentId:ID!):Post!
-    deleteAllPosts:String!
     likePost(postId:ID!):Post!
 }
 `

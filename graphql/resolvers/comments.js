@@ -1,4 +1,4 @@
-const { UserInputError } = require("apollo-server");
+const { UserInputError, AuthenticationError } = require("apollo-server");
 const Post = require("../../models/post");
 const Authentication = require("../../utils/authentication");
 const Helper = require("../../utils/helpers");
@@ -33,6 +33,24 @@ module.exports = {
             );
             await post.save();
             return post;
+        },
+        async deleteComment(_, { postId, commentId }, context) {
+            const token = Helper.getTokenFromContext(context);
+            const currentUser = Authentication.checkAuthorization(token);
+
+            const post = await Post.findById(postId);
+            if (!post) {
+                throw new UserInputError("Post doesn't exist for the given post id.");
+            }
+
+            const commentIndex = post.comments.findIndex(c => c.id === commentId);
+            if (post.comments[commentIndex].username === currentUser.username) {
+                post.comments.splice(commentIndex, 1);
+                await post.save();
+                return post;
+            } else {
+                throw new AuthenticationError("Action not allowed.");
+            }
         }
     }
 
