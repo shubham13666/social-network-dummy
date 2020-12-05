@@ -41,6 +41,10 @@ module.exports = {
             })
             const addedNewPost = await newPost.save();
 
+            context.pubSub.publish('NEW_POSTS', {
+                newPosts: addedNewPost
+            })
+
             return addedNewPost;
         },
         async deletePost(_, { postId }, context) {
@@ -107,6 +111,11 @@ module.exports = {
             await post.save();
             return post;
         }
-    }
+    },
+    subscription: {
+        newPosts: {
+            subscribe: (_, __, { pubSub }) => pubSub.asyncIterator('NEW_POSTS')
+        }
 
+    }
 }

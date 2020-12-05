@@ -61,5 +61,9 @@ type Mutation{
     deleteComment(postId:ID! commentId:ID!):Post!
     likePost(postId:ID!):Post!
 }
+type Subscription{
+    # posts
+    newPosts:Post!
+}
 `
 module.exports = typeDef;
