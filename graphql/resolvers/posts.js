@@ -33,6 +33,10 @@ module.exports = {
             const token = Helpers.getTokenFromContext(context);
             const user = Authentication.checkAuthorization(token);
 
+            if(body.trim()===''){
+                throw new UserInputError("Body can't be empty.");
+            }
+
             const newPost = new Post({
                 body,
                 user: user.id,
