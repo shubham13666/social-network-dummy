@@ -12,7 +12,7 @@ Following are the current feature set available.
 - Add a Comment on a Post.
 - Delete a Comment on a Post.
 - Like a Post.
-- Unlike a Post.
+- Dislike a Post.
 - Subscribe to get new posts automatically.
 - User is automatically logged out after 1hr.
 - **NOTE** All the POST method apis are checked for if the logged in user is Authorized.
